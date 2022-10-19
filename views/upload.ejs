@@ -1,7 +1,13 @@
 <%- include('./components/head.ejs') %>
 <form class="mt-5" method="post" action="/upload" enctype="multipart/form-data">
+    <div class="form-group">
+    <label class="form-control" for="name">Name
+        <input type="text" name="name" placeholder="Name" required value  />
+    </label>
+
     <label for="file" class="form-control">File
     <input type="file" name="file" id="file" value="" />
-</label>
+    </label>
+    </div>
     <button type="submit" class="btn btn-primary">Submit</button>
 </form>
