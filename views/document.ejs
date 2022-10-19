@@ -1,0 +1,18 @@
+<%- include('components/head.ejs') %>
+  <div class="container-fluid document-section">
+    <div class="show-content">
+      <div id="adobe-dc-view"></div>
+      <script src="https://documentservices.adobe.com/view-sdk/viewer.js"></script>
+      <script type="text/javascript">
+        document.addEventListener("adobe_dc_view_sdk.ready", function(){ 
+          var adobeDCView = new AdobeDC.View({clientId: "9fb8a821e8dc430ba2bbbc35d14548ad", divId: "adobe-dc-view"});
+          adobeDCView.previewFile({
+            content:{location: {url: "uploads/sample.pdf"}},
+            metaData:{fileName: "Bodea Brochure.pdf"}
+          }, {});
+        });
+      </script>
+
+
+    </div>
+  </div>
