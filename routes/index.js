@@ -1,30 +1,34 @@
 var express = require("express");
 var router = express.Router();
 const passport = require("passport"); /* POST login. */
-const jwt = require("jsonwebtoken");
+const getUserDataJWT = require('../utility/getDataFromjwt');
 
-const testuser = {
-  name: "marwin",
-  surname: "eewewewewew",
-  rank: "rookie",
-  department: "IT Computer",
-};
 
+//Database Schema
+const Document = require("../models/document");
 /* GET home page. */
 router.get("/", passport.authenticate('jwt', {session: false}), function (req, res, next) {
-  res.render("index", { title: "Express", user: testuser });
+  let user = getUserDataJWT(req, res);
+  res.render("index", { title: "Express", user: user});
 });
 
 router.get("/pdfviewer", (req, res, next) => {
-  res.render("pdfViewer", { title: "PDF Viewer", user: testuser });
+  res.render("pdfViewer", { title: "PDF Viewer"});
 });
 
 router.get("/document", (req, res, next) => {
-  res.render("document", { title: "Document", user: testuser });
+  res.render("document", { title: "Document"});
 })
 
 router.get("/login", (req, res, next) => {
-  res.render("login", { title: "Login", user: testuser });
+  res.render("login", { title: "Login"});
 });
+
+//paper work routes for the user to check documents
+
+
+router.get('/test', passport.authenticate('jwt', {session: false}), (req, res, next) => {
+  res.send(req.user);
+})
 
 module.exports = router;

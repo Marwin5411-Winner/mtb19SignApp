@@ -1,18 +1,62 @@
 <%- include('components/head.ejs') %>
   <div class="container-fluid document-section">
     <div class="show-content">
+      <h3>
+        <%= documents.name %>
+      </h3>
       <div id="adobe-dc-view"></div>
       <script src="https://documentservices.adobe.com/view-sdk/viewer.js"></script>
       <script type="text/javascript">
-        document.addEventListener("adobe_dc_view_sdk.ready", function(){ 
-          var adobeDCView = new AdobeDC.View({clientId: "9fb8a821e8dc430ba2bbbc35d14548ad", divId: "adobe-dc-view"});
+        document.addEventListener("adobe_dc_view_sdk.ready", function () {
+          var adobeDCView = new AdobeDC.View({ clientId: "9fb8a821e8dc430ba2bbbc35d14548ad", divId: "adobe-dc-view" });
           adobeDCView.previewFile({
-            content:{location: {url: "uploads/sample.pdf"}},
-            metaData:{fileName: "Bodea Brochure.pdf"}
-          }, {});
+            content: { location: { url: "/<%= documents.file %>" } },
+            metaData: { fileName: "<%= documents.name %>" },
+          }, {
+            embedMode: "FULL_WINDOW",
+            defaultViewMode: "FIT_PAGE",
+            showDownloadPDF: false,
+          });
         });
       </script>
+      <script type="text/javascript">
+        const saveOptions = {
 
+          autoSaveFrequency: 0,
 
+          enableFocusPolling: false,
+
+          showSaveButton: true
+
+        }
+
+        /*  LOGIC Functions
+        onClick Save button -> save Document to Server -> response result data to Client by alert */
+
+        /*Problem : Save pdf onserver not work  
+        TODO : fixed Save API Callback
+        Save button Not Show when file Edited  */
+        
+
+        adobeDCView.registerCallback(
+          AdobeDC.View.Enum.CallbackType.SAVE_API,
+          function (metaData, content, options) {
+            /* Add your custom save implementation here...and based on that resolve or reject response in given format */
+            return new Promise((resolve, reject) => {
+              resolve({
+                code: AdobeDC.View.Enum.ApiResponseCode.SUCCESS,
+                data: {
+                  /* Updated file metadata after successful save operation */
+                  metaData: {
+                    /* Updated file name */
+                    fileName: "<%= documents.name %>" + "-<%= user.name %>-แก้ไข" + ".pdf",
+                  }
+                }
+              });
+            });
+          },
+          saveOptions
+        );
+      </script>
     </div>
   </div>

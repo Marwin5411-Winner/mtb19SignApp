@@ -1,32 +1,51 @@
 // routes/auth.js
-var express = require("express");
-var router = express.Router();
-const passport = require("passport"); /* POST login. */
+const express = require("express");
+const bcrypt = require("bcrypt");
+const router = express.Router();
+const passport = require("passport");
 const jwt = require("jsonwebtoken");
 
 
+//Database USE
+const User = require("../models/User");
+const { authenticate } = require("passport");
 
-//Login Request Handler
-router.post("/login", (req, res, next) => {
-  passport.authenticate("local", { session: false }, (err, user, info) => {
-    console.log(err);
-    if (err || !user) {
-      return res.status(400).json({
-        message: info ? info.message : "Login failed",
-        user: user,
-      });
-    }
+//Register POST Methods for Route
+router.post("/register", async (req, res) => {
+  const { username, password, name } = req.body;
 
-    req.login(user, { session: false }, (err) => {
-      if (err) {
-        res.send(err);
+  // simple validation
+  if (!name || !username || !password) {
+    return res.render("register", { message: "Please try again" });
+  }
+
+  const passwordHash = bcrypt.hashSync(password, 10);
+  const user = new User({
+    name,
+    username,
+    password: passwordHash,
+  });
+
+  await user.save();
+  res.render("index", { user });
+});
+
+//Login POST method for login process
+router.post("/login", async (req, res, next) => {
+   passport.authenticate('login', { session: false } , (err, data, info) => {
+      if (err) return next(err);
+      console.log(data);
+      if (data) {
+        const token = jwt.sign({data}, 'mtb19signDev');
+        res.cookie('jwt', token, {
+          maxAge : 3600 * 12 * 1000
+        }) 
+        res.redirect('/');
+      } else {
+        res.status(400).send('What is a Problem ' + info.message);
       }
-
-      const token = jwt.sign(user, "your_jwt_secret");
-
-      return res.json({ user, token });
-    });
-  })(req, res);
+   })(req, res, next);
+   
 });
 
 module.exports = router;
