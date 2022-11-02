@@ -4,8 +4,6 @@ const passport = require("passport"); /* POST login. */
 const getUserDataJWT = require('../utility/getDataFromjwt');
 
 
-//Database Schema
-const Document = require("../models/document");
 /* GET home page. */
 router.get("/", passport.authenticate('jwt', {session: false}), function (req, res, next) {
   let user = getUserDataJWT(req, res);

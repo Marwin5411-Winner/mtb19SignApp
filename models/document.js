@@ -3,21 +3,17 @@ const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt');
 
 const docsSchema =  new Schema({
-    id: {
-        type: Number,
-        unique: true,
-    },
     name: String,
     description: {
         type: String,
         default: 'No description'
     },
-    filename: String,
     file: {
         type: String,
         unique: true
     },
-    authorName: String,
+    author: String,
+    authorId: String,
     department: {
         type: String,
         enum: ['กองกิจการพลเรือน', 'กองข่าว', 'กองยุทธการ', 'กองส่งกำลังบำรุง', 'กองกำลังพล', 'ฝ่ายปลัดบัญชี', 'อื่นๆ'],

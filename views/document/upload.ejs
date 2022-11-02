@@ -1,0 +1,65 @@
+<%- include('../components/head.ejs') %>
+<form class="mt-5" method="post" action="/documents/upload" enctype="multipart/form-data">
+    <div class="form-group">
+    <label class="form-control" for="name">ชื่อเอกสาร
+        <input type="text" name="name" placeholder="Name" required value  />
+    </label>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" id="1" name="department" value="กองกำลังพล">
+        <label class="form-check-label" for="1">กองกำลังพล</label>
+    </div>
+    <div class="form-check">
+        <input class="form-check-input" type="radio" id="2" name="department" value="กองกิจการพลเรือน">
+    <label class="form-check-label" for="2">กองกิจการพลเรือน</label>
+    </div>
+    <label for="date">วันที่อัพโหลด:</label>
+    <input type="date" id="date" name="date"> 
+    <label for="file" class="form-control">File
+    <input type="file" name="file" id="file" value="" />
+    </label>
+    </div>
+    <div class="mt-3"></div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+
+
+<!--
+     name: String,
+    description: {
+        type: String,
+        default: 'No description'
+    },
+    filename: String,
+    file: {
+        type: String
+    },
+    authorName: String,
+    department: {
+        type: String,
+        enum: ['กองกิจการพลเรือน', 'กองข่าว', 'กองยุทธการ', 'กองส่งกำลังบำรุง', 'กองกำลังพล', 'ฝ่ายปลัดบัญชี', 'อื่นๆ'],
+        default: ''
+    },
+    date: {
+        type: Date,
+        default: Date.now
+    },
+    //Create reviewer Schema that map type of boolean
+    reviewer: {   
+        type: Map,
+        of: Boolean,
+        default: {
+            'reviewer1': false,
+            'reviewer2': false,
+            'reviewer3': false,
+            'reviewer4': false,
+            'bigboss': false
+        }
+    },
+    status: {
+        type: String,
+        enum: ['pending', 'approved', 'rejected'],
+    },
+    notPassby: {
+        type: String
+    }
+-->

@@ -1,4 +1,6 @@
-<%- include('components/head.ejs') %>
+<%- include('../components/head.ejs') %>
+<div class="mt-5"></div>
+<a href="/documents/upload" class="btn btn-success btn-lg" role="button" aria-disabled="true">อัปโหลดเอกสาร</a>
 <div class="container pending-table mt-5">
   <!--Create Table that loop document data from pendingDoc Map in index.js-->
   <table class="table table-hover">
@@ -14,12 +16,12 @@
     <tbody>
       <% for (var i = 0; i < documents.pendingDoc.length; i++) { %>
       <tr>
-        <th scope="row"><%= documents.pendingDoc[i].Name %></th>
-        <td><%= documents.pendingDoc[i].authorName %></td>
+        <th scope="row"><%= documents.pendingDoc[i].name %></th>
+        <td><%= documents.pendingDoc[i].author %></td>
         <td><%= documents.pendingDoc[i].department %></td>
         <td><%= documents.pendingDoc[i].status %></td>
         <td>
-          <a href="documents/document/<%= documents.pendingDoc[i]._id %>" class="btn btn-primary">View</a>
+          <a href="documents/view/<%= documents.pendingDoc[i]._id %>" class="btn btn-primary">View</a>
         </td>
       </tr>
       <% } %>

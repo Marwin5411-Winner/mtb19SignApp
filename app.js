@@ -38,6 +38,7 @@ app.use(passport.initialize());
 //app.use(passport.session());
 
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'uploads')));
 
 app.use('/', indexRouter);
 app.use('/users', passport.authenticate('jwt', {session: false}), usersRouter);

@@ -44,7 +44,14 @@
 </div>
 <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
 <!--Add javascript script-->
+
+
+
 <script>
+    //TODO : make this! Script to support our System design
+    //When finish edited and Save PDf by post Method to save the changes to server
+    //Then show the result to client by callback function
+    //Show alert when callback result is returned
     const clientId = "9fb8a821e8dc430ba2bbbc35d14548ad";
     const viewerOptions = {
         embedMode: "FULL_WINDOW",
@@ -96,9 +103,8 @@
                 formData = new FormData();
                 var pdfFilename = urlToPDF.split("/").slice(-1)[0];
                 pdfFilename = pdfFilename.split(".")[0] + "-" + uuidv4() + ".pdf";
-                formData.append('pdfFile', blob, pdfFilename);
-                
-                fetch('/documents/document/<%= documents.pendingDoc[i]._id %>', {
+                formData.append('<%= document', blob, pdfFilename);
+                fetch('/documents/save/<%= documents.pendingDoc[i]._id %>', {
                     method: 'POST',
                     body: formData
                 }).then(function (response) {

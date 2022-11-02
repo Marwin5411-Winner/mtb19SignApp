@@ -45,26 +45,27 @@ document.addEventListener("adobe_dc_view_sdk.ready", function () {
 adobeDCView.registerCallback(
     AdobeDC.View.Enum.CallbackType.SAVE_API,
     function (metaData, content, options) {
-        var uint8Array = new Uint8Array(content);
-        var blob = new Blob([uint8Array], { type: 'application/pdf' });
-        formData = new FormData();
-        var pdfFilename = urlToPDF.split("/").slice(-1)[0];
-        pdfFilename = pdfFilename.split(".")[0] + "-" + uuidv4() + ".pdf";
-        formData.append('pdfFile', blob, pdfFilename);
+        // var uint8Array = new Uint8Array(content);
+        // var blob = new Blob([uint8Array], { type: 'application/pdf' });
+        // formData = new FormData();
+        // var pdfFilename = urlToPDF.split("/").slice(-1)[0];
+        // pdfFilename = pdfFilename.split(".")[0] + "-" + uuidv4() + ".pdf";
+        // formData.append('pdfFile', blob, pdfFilename);
 
-        var zipFileName = pdfFilename.replace(".pdf", ".zip");
+        // var zipFileName = pdfFilename.replace(".pdf", ".zip");
 
-        fetch("https://practicalpdf.com/code-pens/reflect/", {
-            method: 'POST',
-            body: formData,
-        })
-            .then(
-                function (response) {
-                    if (response.status == 200) {
-                        updateSaveUI(zipFileName);
-                    }
-                }
-            )
+        // fetch("https://practicalpdf.com/code-pens/reflect/", {
+        //     method: 'POST',
+        //     body: formData,
+        // })
+        //     .then(
+        //         function (response) {
+        //             if (response.status == 200) {
+        //                 updateSaveUI(zipFileName);
+        //             }
+        //         }
+        //     )
+        fetch("http://dev.mo")
 
         return new Promise((resolve, reject) => {
             resolve({
