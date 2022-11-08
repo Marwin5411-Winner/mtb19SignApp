@@ -7,6 +7,11 @@ const multer = require("multer");
 const getUserDataJWT = require("../utility/getDataFromjwt");
 const removeTextFromStart = require("../utility/removeTextFromStart");
 
+
+//Get models
+const Document = require("../models/document");
+
+//Save file With Random name
 //Get configs
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -15,14 +20,27 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     console.log(file);
 
-    cb(null, req.body.department + '-' + req.body.name + "-" + req.body.date + "-" + file.originalname);
+    
+
+    cb(null, Date.now() + ".pdf");
   },
 });
 
-const upload = multer({ storage: storage });
+const saveFile = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./uploads/docs/");
+  },
+  filename: async (req, files, cb) => {
+    console.log(files);
+    
+    cb(null, files.originalname);
+  }
+})
 
-//Get models
-const Document = require("../models/document");
+const upload = multer({ storage: storage });
+const save = multer({ storage: saveFile });
+
+
 
 
 
@@ -62,12 +80,15 @@ router.get("/view/:id", async (req, res, next) => {
   let user = getUserDataJWT(req, res);
   try {
     const document = await Document.findById(req.params.id).exec();
+    
     if (document) {
+      console.log(document);
       res.render("document/document", {
         title: "Document",
         user: user,
         documents: document,
       });
+
     } else {
       res.send("Document not found");
     }
@@ -145,10 +166,9 @@ router.post("/upload", upload.single("file"), (req, res, next) => {
 });
 
 //POST Method Save PDF From edit file to replace file with new file
-router.post("/save", upload.single("file"), async (req, res, next) => {
+router.post("/save", save.single("file"), async (req, res, next) => {
   try {
-    let user = getUserDataJWT(req, res);
-    console.log("Save");
+    let user = getUserDataJWT(req, res); 
   } catch (err) {
     console.log("Error saving file to file");
     res.redirect("/documents");

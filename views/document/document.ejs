@@ -20,6 +20,7 @@
             showLeftHandPanel: false,
             showAnnotationTools: true
           });
+
           const saveOptions = {
 
             autoSaveFrequency: 0,
@@ -30,6 +31,16 @@
 
           }
 
+          const profile = {
+            userProfile: {
+              name: '<%= user.rank %> <%= user.name %>',
+              firstName: '',
+              lastName: '',
+              email: ''
+            }
+
+          };
+
           /*  LOGIC Functions
           onClick Save button -> save Document to Server -> response result data to Client by alert */
 
@@ -37,6 +48,18 @@
           TODO : fixed Save API Callback
           //FIXED: Save button Not Show when file Edited  */
           //Solution : add Action to Callback function to Save Data by POST Method
+
+          adobeDCView.registerCallback(
+            AdobeDC.View.Enum.CallbackType.GET_USER_PROFILE_API,
+            function () {
+              return new Promise((resolve, reject) => {
+                resolve({
+                  code: AdobeDC.View.Enum.ApiResponseCode.SUCCESS,
+                  data: profile
+                });
+              });
+            }
+          );
 
 
 
@@ -48,9 +71,17 @@
               var blob = new Blob([uint8Array], { type: 'application/pdf' });
               //Create From data like Form tag Html
               var formData = new FormData();
-              formData.append('file', blob, metaData.fileName);
+              //Send Form data to Server 
+              //file: fileblob
+              //name: document.name
+              //path: document.file
+              //console.log(metaData);
+              var path = '<%= documents.file %>';
+
+              console.log(path);
+              formData.append('file', blob, path);
+              formData.append('id', '<%= documents._id %>');
               formData.append('name', '<%= documents.name %>-แก้ไข');
-              formData.append('path', '<%= documents.file %>');
               fetch('/documents/save', {
                 method: 'POST',
                 body: formData
