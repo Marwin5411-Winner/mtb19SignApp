@@ -24,16 +24,14 @@ const docsSchema =  new Schema({
         default: Date.now
     },
     //Create reviewer Schema that map type of boolean
-    reviewer: {   
-        type: Map,
-        of: Boolean,
-        default: {
-            'reviewer1': false,
-            'reviewer2': false,
-            'reviewer3': false,
-            'reviewer4': false,
-            'bigboss': false
-        }
+    reviewer:  {
+        type: Array,
+        of: Number,
+        default: [0,0,0,0,0]
+    },
+    reviewerStatus: {
+        type: Number,
+        default: 1
     },
     status: {
         type: String,

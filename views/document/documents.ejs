@@ -1,8 +1,10 @@
 <%- include('../components/head.ejs') %>
+
 <div class="mt-5"></div>
 <a href="/documents/upload" class="btn btn-success btn-lg" role="button" aria-disabled="true">อัปโหลดเอกสาร</a>
 <div class="container pending-table mt-5">
   <!--Create Table that loop document data from pendingDoc Map in index.js-->
+  <h2>Your Work</h2>
   <table class="table table-hover">
     <thead>
       <tr>
@@ -10,6 +12,34 @@
         <th scope="col">Document AuthorName</th>
         <th scope="col">Document department</th>
         <th scope="col">Document Status</th>
+        <th scope="col">Checked</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for (var i = 0; i < documents.yourWork.length; i++) { %>
+      <tr>
+        <th scope="row"><%= documents.yourWork[i].name %></th>
+        <td><%= documents.yourWork[i].author %></td>
+        <td><%= documents.yourWork[i].department %></td>
+        <td><%= documents.yourWork[i].status %></td>
+        <td><%= documents.yourWork[i].reviewer %></td>
+        <td>
+          <a href="documents/view/<%= documents.yourWork[i]._id %>" class="btn btn-primary">View</a>
+        </td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
+  <h2>pending</h2>
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        <th scope="col">Document Name</th>
+        <th scope="col">Document AuthorName</th>
+        <th scope="col">Document department</th>
+        <th scope="col">Document Status</th>
+        <th scope="col">Checked</th>
         <th scope="col">Action</th>
       </tr>
     </thead>
@@ -20,6 +50,7 @@
         <td><%= documents.pendingDoc[i].author %></td>
         <td><%= documents.pendingDoc[i].department %></td>
         <td><%= documents.pendingDoc[i].status %></td>
+        <td><%= documents.pendingDoc[i].reviewer %></td>
         <td>
           <a href="documents/view/<%= documents.pendingDoc[i]._id %>" class="btn btn-primary">View</a>
         </td>
@@ -27,8 +58,31 @@
       <% } %>
     </tbody>
   </table>
- 
-  
+  <h2>rejected</h2>
+  <table class="table table-hover mt-5 table-bordered border-danger">
+    <thead>
+      <tr>
+        <th scope="col">Document Name</th>
+        <th scope="col">Document AuthorName</th>
+        <th scope="col">Document department</th>
+        <th scope="col">Document Status</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for (var i = 0; i < documents.rejectedDoc.length; i++) { %>
+      <tr>
+        <th scope="row"><%= documents.rejectedDoc[i].name %></th>
+        <td><%= documents.rejectedDoc[i].author %></td>
+        <td><%= documents.rejectedDoc[i].department %></td>
+        <td><%= documents.rejectedDoc[i].status %></td>
+        <td>
+          <a href="documents/view/<%= documents.rejectedDoc[i]._id %>" class="btn btn-primary">View</a>
+        </td>
+      </tr>
+      <% } %>
+    </tbody>
+  </table>
   
    
 

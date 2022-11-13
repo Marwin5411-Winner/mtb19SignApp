@@ -3,6 +3,7 @@ const passport = require("passport"),
   LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
 const User = require("../models/User");
+require("dotenv").config();
 
 const cookieExtractor = (req) => {
   let jwt = null;
@@ -41,8 +42,10 @@ passport.use(
           });
         }
         
-        let data = { id: user.id, username: user.username , name: user.name };
-
+        let data = {id: user._id, username: user.username , name: user.name, prefix: user.prefix, reviewer: user.reviewer, department: user.department};
+        if (process.env.process == 'development') {
+          console.log("Passport data \n" + data)
+        }
         if (bcrypt.compareSync(password, user.password)) {
           return cb(null, data, { message: "Logged In Successfully" });
         } else {

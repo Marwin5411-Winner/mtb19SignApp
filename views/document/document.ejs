@@ -1,11 +1,16 @@
 <%- include('../components/head.ejs') %>
-  <div class="container-fluid document-section">
+  <div class="container-fluid document-section mt-3">
+    <!--Todo Add Pass/Reject Buttton-->
+    <div class="btn-group" role="group" aria-label="Basic mixed styles">
+      <a href="/documents/reject/<%= documents._id %>" id="reject" class="btn btn-danger">ไม่ผ่าน</a>
+      <a href="/documents/approve/<%= documents._id %>" id="pass" class="btn btn-success">ผ่าน</a>
+    </div>
     <div class="show-content">
       <h3>
         <%= documents.name %>
       </h3>
       <div id="adobe-dc-view"></div>
-      <script src="https://documentcloud.adobe.com/view-sdk/main.js"></script>
+      <script src="https://documentservices.adobe.com/view-sdk/viewer.js"></script>
       <script type="text/javascript">
         document.addEventListener("adobe_dc_view_sdk.ready", function () {
           var adobeDCView = new AdobeDC.View({ clientId: "24ff61c4306f4824b26653bad3fccbda", divId: "adobe-dc-view" });
@@ -25,7 +30,7 @@
 
             autoSaveFrequency: 0,
 
-            enableFocusPolling: false,
+            enableFocusPolling: true,
 
             showSaveButton: true
 
@@ -33,7 +38,7 @@
 
           const profile = {
             userProfile: {
-              name: '<%= user.rank %> <%= user.name %>',
+              name: '<%= user.prefix %> <%= user.name %>',
               firstName: '',
               lastName: '',
               email: ''
@@ -107,7 +112,7 @@
                     /* Updated file metadata after successful save operation */
                     metaData: {
                       /* Updated file name */
-                      fileName: "<%= documents.name %>" + "-<%= user.name %>-แก้ไข" + ".pdf",
+                      fileName: "<%= documents.name %>-แก้ไข" + ".pdf",
                     }
                   }
                 });
@@ -117,7 +122,8 @@
           );
         });
       </script>
-      <script type="text/javascript"></script>
+      <script type="text/javascript">
+      </script>
       </script>
     </div>
   </div>

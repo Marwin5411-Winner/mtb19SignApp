@@ -41,10 +41,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, 'uploads')));
 
 app.use('/', indexRouter);
-app.use('/users', passport.authenticate('jwt', {session: false}), usersRouter);
-app.use('/upload', passport.authenticate('jwt', {session: false}), uploadRouter);
+app.use('/users', passport.authenticate('jwt', {session: false, failureRedirect: '/login'}), usersRouter);
+app.use('/upload', passport.authenticate('jwt', {session: false, failureRedirect: '/login'}), uploadRouter);
 app.use('/auth',  authRouter);
-app.use('/documents', passport.authenticate('jwt', {session: false}), documentsRouter);
+app.use('/documents', passport.authenticate('jwt', {session: false, failureRedirect: '/login'}), documentsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

@@ -31,7 +31,7 @@ const userSchema =  new Schema({
     prefix: {
         type: String
     },
-    reviewerRank: {
+    reviewer: {
         type: Number,
         enum: [0,1,2,3,4,5]
     },

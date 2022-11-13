@@ -7,7 +7,6 @@ const multer = require("multer");
 const getUserDataJWT = require("../utility/getDataFromjwt");
 const removeTextFromStart = require("../utility/removeTextFromStart");
 
-
 //Get models
 const Document = require("../models/document");
 
@@ -20,8 +19,6 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     console.log(file);
 
-    
-
     cb(null, Date.now() + ".pdf");
   },
 });
@@ -32,17 +29,13 @@ const saveFile = multer.diskStorage({
   },
   filename: async (req, files, cb) => {
     console.log(files);
-    
+
     cb(null, files.originalname);
-  }
-})
+  },
+});
 
 const upload = multer({ storage: storage });
 const save = multer({ storage: saveFile });
-
-
-
-
 
 //Get Data to Client
 router.get("/", async (req, res, next) => {
@@ -55,13 +48,19 @@ router.get("/", async (req, res, next) => {
 
     const rejectedDoc = await Document.find({ status: "rejected" }).exec();
 
+    const CreatorDoc = await Document.find({ authorId: user.id }).exec();
+
+    const yourWork = await Document.find({ reviewerStatus: user.reviewer }).exec(); 
+
     //Merge all the documents into one obj
     const documents = {
       pendingDoc: pendingDoc,
       approvedDoc: approvedDoc,
       rejectedDoc: rejectedDoc,
+      CreatorDoc,
+      yourWork
     };
-    console.log(documents);
+    console.log(documents.yourWork);
     res.render("document/documents", {
       title: "documents",
       user: user,
@@ -80,47 +79,40 @@ router.get("/view/:id", async (req, res, next) => {
   let user = getUserDataJWT(req, res);
   try {
     const document = await Document.findById(req.params.id).exec();
-    
-    if (document) {
-      console.log(document);
-      res.render("document/document", {
-        title: "Document",
-        user: user,
-        documents: document,
-      });
-
-    } else {
-      res.send("Document not found");
-    }
+    console.log(document);
+    res.render("document/document", {
+      title: "Document",
+      user: user,
+      documents: document,
+    });
   } catch (err) {
-    res.send("Document not found");
+    res.redirect("/404?type=error&description=" + err);
   }
   //res.render("document", { title: "Document", user: user, document: document});
 });
 
+//Todo: Cannot Approve Document
+//Priotrity Important
 //POST Aprrove document per reviewer if user.reviewer = 1 then set reviewer.reviewer1 = true
-router.post("/approve/:id", async (req, res, next) => {
-  let user = getUserDataJWT(req, res);
-  const document = await Document.findById(req.params.id).exec();
-  if (user.reviewer == 1) {
-    document.reviewer.reviewer1 = true;
-  } else if (user.reviewer == 2) {
-    document.reviewer.reviewer2 = true;
-  } else if (user.reviewer == 3) {
-    document.reviewer.reviewer3 = true;
-  } else if (user.reviewer == 4) {
-    document.reviewer.reviewer4 = true;
-  } else if (user.reviewer == 5) {
-    document.reviewer.bigboss = true;
-  } else {
-    res.status(404).send("You are not a reviewer");
+router.get("/approve/:id", async (req, res, next) => {
+  try {
+    let user = getUserDataJWT(req, res);
+    const document = await Document.findById(req.params.id).exec();
+    //Todo Create New logic for dynamically updating reviewer document
+    console.log(document.reviewer);
+    document.reviewer.splice(user.reviewer - 1, 1, 1);
+    document.reviewerStatus = user.reviewer + 1;
+    await document.save().then((data) => {
+      res.redirect("/documents");
+      console.log(data);
+     });
+  } catch (err) {
+    res.redirect("/404?type=error&description=" + err);
   }
-  document.save();
-  res.redirect("/documents");
 });
 
 //POST reject document per reviewer if user.reviewer = 1 then set reviewer.reviewer1 = true
-router.post("/reject/:id", async (req, res, next) => {
+router.get("/reject/:id", async (req, res, next) => {
   let user = getUserDataJWT(req, res);
   const document = await Document.findById(req.params.id).exec();
   //set document.reviewer to default value
@@ -132,43 +124,47 @@ router.post("/reject/:id", async (req, res, next) => {
     bigboss: false,
   };
   document.status = "rejected";
-  document.notPassby = user.prefix + user.name;
+  document.notPassby = user.prefix + " " + user.name;
   await document.save();
   res.redirect("/documents");
 });
 
-//Upload Document Page 
+//Upload Document Page
 router.get("/upload", async (req, res, next) => {
   let user = getUserDataJWT(req, res);
-  res.render("document/upload", { title: 'Hello World', user: user });
+  res.render("document/upload", { title: "Hello World", user: user });
 });
 
 //Upload a document
 router.post("/upload", upload.single("file"), (req, res, next) => {
-  const user = getUserDataJWT(req, res);
-  const path = removeTextFromStart(8, req);
-  let document = new Document({
-    name: req.body.name,
-    description: req.body.description,
-    author: user.rank + ' ' + user.name,
-    authorId: user._id,
-    status: "pending",
-    department: req.body.department,
-    file: path
-  });
-  console.log(document);
-  document.save((err, document) => {
-    if (err) {
-      return next(err);
-    }
+  try {
+    const user = getUserDataJWT(req, res);
+    const path = removeTextFromStart(8, req);
+    let document = new Document({
+      name: req.body.name,
+      description: req.body.description,
+      author: user.rank + " " + user.name,
+      authorId: user.id,
+      status: "pending",
+      department: req.body.department,
+      file: path,
+    });
+    console.log(document);
+    document.save((err, document) => {
+      if (err) {
+        return next(err);
+      }
+      res.redirect("/documents");
+    });
+  } catch (err) {
     res.redirect("/documents");
-  });
+  }
 });
 
 //POST Method Save PDF From edit file to replace file with new file
 router.post("/save", save.single("file"), async (req, res, next) => {
   try {
-    let user = getUserDataJWT(req, res); 
+    let user = getUserDataJWT(req, res);
   } catch (err) {
     console.log("Error saving file to file");
     res.redirect("/documents");
