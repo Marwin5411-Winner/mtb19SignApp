@@ -48,4 +48,10 @@ router.post("/login", async (req, res, next) => {
    
 });
 
+//Logout GET method for logout process
+router.get("/logout", (req, res) => {
+  res.clearCookie("jwt");
+  res.redirect("/");
+});
+
 module.exports = router;

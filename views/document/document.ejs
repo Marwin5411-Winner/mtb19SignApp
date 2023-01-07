@@ -1,10 +1,19 @@
 <%- include('../components/head.ejs') %>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@10/dist/sweetalert2.min.css">
+
   <div class="container-fluid document-section mt-3">
     <!--Todo Add Pass/Reject Buttton-->
-    <div class="btn-group" role="group" aria-label="Basic mixed styles">
-      <a href="/documents/reject/<%= documents._id %>" id="reject" class="btn btn-danger">ไม่ผ่าน</a>
-      <a href="/documents/approve/<%= documents._id %>" id="pass" class="btn btn-success">ผ่าน</a>
+    <% if (documents.status == 'pending') { %>
+    <div class="btn-group mt-2" role="group" aria-label="Basic mixed styles">
+      <!-- Change this to Sweet alert -->
+      <!-- <a href="/documents/reject/<%= documents._id %>" id="reject" class="btn btn-danger">ไม่ผ่าน</a>
+      <a href="/documents/approve/<%= documents._id %>" id="pass" class="btn btn-success">ผ่าน</a> -->
+      <button type="button" class="btn btn-danger" id="reject">ไม่ผ่าน</button>
+      <button type="button" class="btn btn-success" id="pass">ผ่าน</button>
     </div>
+    <% } %>
+    <!-- <a href="/documents/edit/<%= documents._id %>" class="btn btn-info" >แก้ไข</a> -->
     <div class="show-content">
       <h3>
         <%= documents.name %>
@@ -123,6 +132,42 @@
         });
       </script>
       <script type="text/javascript">
+          document.getElementById("reject").addEventListener("click", reject);
+          document.getElementById("pass").addEventListener("click", pass);
+
+          function reject() {
+            Swal.fire({
+              title: 'คุณต้องการไม่ผ่านเอกสารนี้ใช่หรือไม่?',
+              text: "คุณจะไม่สามารถกู้คืนไฟล์นี้ได้!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'ใช่, ไม่ผ่าน!',
+              cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                window.location.href = "/documents/reject/<%= documents._id %>";
+              }
+            })
+          }
+
+          function pass() {
+            Swal.fire({
+              title: 'คุณต้องการผ่านเอกสารนี้ใช่หรือไม่?',
+              text: "คุณจะไม่สามารถกู้คืนไฟล์นี้ได้!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'ใช่, ผ่าน!',
+              cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                window.location.href = "/documents/approve/<%= documents._id %>";
+              }
+            })
+          }
       </script>
       </script>
     </div>

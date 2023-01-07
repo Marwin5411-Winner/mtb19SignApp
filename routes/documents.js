@@ -91,6 +91,22 @@ router.get("/view/:id", async (req, res, next) => {
   //res.render("document", { title: "Document", user: user, document: document});
 });
 
+//Get Edit Document
+router.get("/edit/:id", async (req, res) => {
+  let user = getUserDataJWT(req, res);
+  try {
+    const document = await Document.findById(req.params.id).exec();
+    console.log(document);
+    res.render("document/editDocs", {
+      title: "Document",
+      user: user,
+      documents: document,
+    });
+  } catch (err) {
+    res.redirect("/404?type=error&description=" + err);
+  }
+});
+
 //Todo: Cannot Approve Document
 //Priotrity Important
 //POST Aprrove document per reviewer if user.reviewer = 1 then set reviewer.reviewer1 = true
@@ -113,20 +129,18 @@ router.get("/approve/:id", async (req, res, next) => {
 
 //POST reject document per reviewer if user.reviewer = 1 then set reviewer.reviewer1 = true
 router.get("/reject/:id", async (req, res, next) => {
+  try {
   let user = getUserDataJWT(req, res);
   const document = await Document.findById(req.params.id).exec();
   //set document.reviewer to default value
-  document.reviewer = {
-    reviewer1: false,
-    reviewer2: false,
-    reviewer3: false,
-    reviewer4: false,
-    bigboss: false,
-  };
+  document.reviewer = [0,0,0,0,0]
   document.status = "rejected";
   document.notPassby = user.prefix + " " + user.name;
   await document.save();
   res.redirect("/documents");
+  } catch (err) {
+    res.redirect('/404?type=error&description='+ err)
+  }
 });
 
 //Upload Document Page
@@ -143,7 +157,7 @@ router.post("/upload", upload.single("file"), (req, res, next) => {
     let document = new Document({
       name: req.body.name,
       description: req.body.description,
-      author: user.rank + " " + user.name,
+      author: user.prefix + " " + user.name,
       authorId: user.id,
       status: "pending",
       department: req.body.department,

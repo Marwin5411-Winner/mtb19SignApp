@@ -62,3 +62,4 @@ typings/
 
 #upload 
 uploads/
+*.pdf

@@ -1,4 +1,84 @@
-    <%- include('./components/head.ejs') %>
-    <h1 class="mt-3">Smart Office</h1>
-    <p>ยินดีต้อนรับ <%= user.name %></p>
+<%- include('./components/head.ejs') %>
+    <h1 class="mt-3">MC 19th Smart Office</h1>
+    <h4 id="time_now"></h4>
+    <div class="container-fluid mt-3 row ">
+        <div class="col">
+            <div class="card p-3 bg-light">
+                <h2 class="text-black">พยากรณ์อากาศชั่วโมงนี้ ที่ สระแก้ว</h2>
+                <h4 class="text-black" id="now_temperature_sakeao"></h4>
+                <h4 class="text-black" id="now_rain_sakeao"></h4>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card p-3 bg-light">
+                <h2 class="text-black">พยากรณ์อากาศชั่วโมงนี้ ที่ จันทบุรี</h2>
+                <h4 class="text-black" id="now_temperature_chan"></h4>
+                <h4 class="text-black" id="now_rain_chan"></h4>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card p-3 bg-light">
+                <h2 class="text-black">พยากรณ์อากาศชั่วโมงนี้ ที่ ตราด</h2>
+                <h4 class="text-black" id="now_temperature_trat"></h4>
+                <h4 class="text-black" id="now_rain_trat"></h4>
+            </div>
+        </div>
+        <h2 class="text-white mt-5">แผนที่จุดปะทะในสงคราม ยูเครน-รัสเซีย</h2>
+        <iframe style="width:100%;height:700px;border:0px" src="https://liveuamap.com"></iframe> 
+
+    </div>
+
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/luxon@3.2.1/build/global/luxon.min.js"></script>
+
+    <script type="text/javascript">
+        var DateTime = luxon.DateTime;
+        var time_now = document.getElementById("time_now")
+        function UpdateTime () {
+            var now = DateTime.now().setLocale('th').toLocaleString(DateTime.DATETIME_HUGE_WITH_SECONDS);;
+            console.log(now);
+            time_now.innerHTML = "เวลา ณ ตอนนี้ " + now;
+        }
+        setInterval(UpdateTime,1000)
+        //Sakeao
+        fetch('https://api.open-meteo.com/v1/forecast?latitude=13.81&longitude=102.07&hourly=temperature_2m,rain&timezone=Asia%2FBangkok', {
+            method: 'GET',
+        }).then(async (data) => {
+            //Get the weather forecast data from OpenWeather 
+            data = await data.json();
+            console.log(data);
+            document.getElementById('now_temperature_sakeao').innerHTML = "อุณหภูมิ : " + data.hourly.temperature_2m[0] + " " + data.hourly_units.temperature_2m
+            document.getElementById('now_rain_sakeao').innerHTML = "ฝน : " + data.hourly.rain[0] + " " + data.hourly_units.rain
+        })
+
+        //Chantaburi
+        fetch('https://api.open-meteo.com/v1/forecast?latitude=12.609&longitude=102.106&hourly=temperature_2m,rain&timezone=Asia%2FBangkok', {
+            method: 'GET',
+        }).then(async (data) => {
+            //Get the weather forecast data from OpenWeather 
+            data = await data.json();
+            console.log(data);
+            document.getElementById('now_temperature_chan').innerHTML = "อุณหภูมิ : " + data.hourly.temperature_2m[0] + " " + data.hourly_units.temperature_2m
+            document.getElementById('now_rain_chan').innerHTML = "ฝน : " + data.hourly.rain[0] + " " + data.hourly_units.rain
+        })
+
+        //Trat https://api.open-meteo.com/v1/forecast?latitude=12.240&longitude=102.517&hourly=temperature_2m,rain&timezone=Asia%2FBangkok
+        fetch('https://api.open-meteo.com/v1/forecast?latitude=12.240&longitude=102.517&hourly=temperature_2m,rain&timezone=Asia%2FBangkok', {
+            method: 'GET',
+        }).then(async (data) => {
+            //Get the weather forecast data from OpenWeather 
+            data = await data.json();
+            console.log(data);
+            document.getElementById('now_temperature_trat').innerHTML = "อุณหภูมิ : " + data.hourly.temperature_2m[0] + " " + data.hourly_units.temperature_2m
+            document.getElementById('now_rain_trat').innerHTML = "ฝน : " + data.hourly.rain[0] + " " + data.hourly_units.rain
+        })
+
+        fetch('https://rta.mi.th/category/news/', {
+            method: 'GET',
+        }).then(async (data) => {
+            data = await data.json();
+            console.log(data)
+        })
+
+    </script>
     <%- include('./components/footer.ejs') %>

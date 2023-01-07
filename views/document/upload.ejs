@@ -1,29 +1,51 @@
 <%- include('../components/head.ejs') %>
-<form class="mt-5" method="post" action="/documents/upload" enctype="multipart/form-data">
-    <div class="form-group">
-    <label class="form-control" for="name">ชื่อเอกสาร
-        <input type="text" name="name" placeholder="Name" required value  />
-    </label>
-    <div class="form-check">
-        <input class="form-check-input" type="radio" id="1" name="department" value="กองกำลังพล">
-        <label class="form-check-label" for="1">กองกำลังพล</label>
-    </div>
-    <div class="form-check">
-        <input class="form-check-input" type="radio" id="2" name="department" value="กองกิจการพลเรือน">
-    <label class="form-check-label" for="2">กองกิจการพลเรือน</label>
-    </div>
-    <label for="date">วันที่อัพโหลด:</label>
-    <input type="date" id="date" name="date" required> 
-    <label for="file" class="form-control">File
-    <input type="file" name="file" id="file" value="" required  accept="application/pdf"/>
-    </label>
-    </div>
-    <div class="mt-3"></div>
-    <button type="submit" class="btn btn-primary">Submit</button>
-</form>
+    <form class="mt-5" method="post" action="/documents/upload" enctype="multipart/form-data"
+        onsubmit="checkForm(this)">
+        <div class="form-group">
+            <label class="form-control" for="name">ชื่อเอกสาร
+                <input type="text" name="name" placeholder="Name" required value />
+            </label>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" id="1" name="department" value="กองกำลังพล">
+                <label class="form-check-label" for="1">กองกำลังพล</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" id="2" name="department" value="กองกิจการพลเรือน">
+                <label class="form-check-label" for="2">กองกิจการพลเรือน</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" id="3" name="department" value="กองยุทธการ">
+                <label class="form-check-label" for="3">กองยุทธการ</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" id="4" name="department" value="กองส่งกำลังบำรุง">
+                <label class="form-check-label" for="4">กองส่งกำลังบำรุง</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" id="5" name="department" value="กองข่าว">
+                <label class="form-check-label" for="5">กองข่าว</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" id="6" name="department" value="ฝ่ายปลัดบัญชี">
+                <label class="form-check-label" for="6">ฝ่ายปลัดบัญชี</label>
+            </div>
+            <div class="form-check">
+                <input class="form-check-input" type="radio" id="7" name="department" value="อื่นๆ">
+                <label class="form-check-label" for="7">อื่นๆ</label>
+            </div>
+            
+            
+            <label for="date">วันที่อัพโหลด:</label>
+            <input type="date" id="date" name="date" required>
+            <label for="file" class="form-control">File
+                <input type="file" name="file" id="file" value="" required accept="application/pdf" />
+            </label>
+        </div>
+        <div class="mt-3"></div>
+        <button id="submit" onclick="" type="submit" class="btn btn-primary">Submit</button>
+    </form>
 
-
-<!--
+    <!--
      name: String,
     description: {
         type: String,
