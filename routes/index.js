@@ -19,7 +19,7 @@ router.get("/document", (req, res, next) => {
 })
 
 router.get("/login", (req, res, next) => {
-  res.render("login", { title: "Login"});
+  res.render("login", { title: "Login", error: req.query.error});
 });
 
 router.get("/404", (req, res, next)  => {

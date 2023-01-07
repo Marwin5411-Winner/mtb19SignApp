@@ -2,13 +2,14 @@ var express = require("express");
 var router = express.Router();
 const passport = require("passport"); /* POST login. */
 const multer = require("multer");
-
+const fs = require("fs");
 //Get Utility
 const getUserDataJWT = require("../utility/getDataFromjwt");
 const removeTextFromStart = require("../utility/removeTextFromStart");
 
 //Get models
 const Document = require("../models/document");
+const { deepStrictEqual } = require("assert");
 
 //Save file With Random name
 //Get configs
@@ -105,6 +106,26 @@ router.get("/edit/:id", async (req, res) => {
   } catch (err) {
     res.redirect("/404?type=error&description=" + err);
   }
+});
+
+//Delete document
+router.get("/delete/:id", async (req, res) => {
+    let user = getUserDataJWT(req, res);
+    try {
+      //delete Document from database 
+      const document = await Document.findById(req.params.id).exec();
+      fs.unlink(document.path, function (err) {
+        console.error(err);
+        res.redirect("/404?type=error&description=" + err);
+      });
+
+      const doc = await Document.deleteOne({ _id : req.params.id}).exec();
+      console.log(doc);
+      res.redirect('/documents')
+    } catch (err) {
+      res.redirect("/404?type=error&description=" + err);
+    }
+
 });
 
 //Todo: Cannot Approve Document

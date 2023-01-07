@@ -42,7 +42,7 @@ router.post("/login", async (req, res, next) => {
         }) 
         res.redirect('/');
       } else {
-        res.status(400).send('What is a Problem ' + info.message);
+        res.redirect('/login?error=' + info.message);
       }
    })(req, res, next);
    
@@ -51,7 +51,7 @@ router.post("/login", async (req, res, next) => {
 //Logout GET method for logout process
 router.get("/logout", (req, res) => {
   res.clearCookie("jwt");
-  res.redirect("/");
+  res.redirect("/login");
 });
 
 module.exports = router;
