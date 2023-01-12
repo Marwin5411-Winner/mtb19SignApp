@@ -11,7 +11,6 @@ const removeTextFromStart = require("../utility/removeTextFromStart");
 require("dotenv").config();
 //Get models
 const Document = require("../models/document");
-const { deepStrictEqual } = require("assert");
 //Save file With Random name
 //Get configs
 // const storage = multer.diskStorage({
