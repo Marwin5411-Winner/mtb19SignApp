@@ -12,8 +12,6 @@ require("dotenv").config();
 //Get models
 const Document = require("../models/document");
 const { deepStrictEqual } = require("assert");
-const S3 = require('aws-sdk/clients/s3');
-const s3 = new S3();
 //Save file With Random name
 //Get configs
 // const storage = multer.diskStorage({
@@ -62,7 +60,7 @@ const upload = multer({
 
 const save = multer({
   storage: multerS3({
-    s3: s3,
+    s3: s3Key,
     bucket: 'mc19th',
     acl: 'public-read',
     key: function (req, file, cb) {
