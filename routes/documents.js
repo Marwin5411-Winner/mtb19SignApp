@@ -211,7 +211,7 @@ router.post("/upload", upload.single("file"), (req, res, next) => {
       authorId: user.id,
       status: "pending",
       department: req.body.department,
-      file: req.file.url
+      file: req.file.location
     });
     console.log("Upload Doc: " +document);
     document.save((err, document) => {
