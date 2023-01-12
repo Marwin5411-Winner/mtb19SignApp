@@ -3,40 +3,74 @@ var router = express.Router();
 const passport = require("passport"); /* POST login. */
 const multer = require("multer");
 const fs = require("fs");
+const { S3Client } = require("@aws-sdk/client-s3");
+const multerS3 = require("multer-s3");
 //Get Utility
 const getUserDataJWT = require("../utility/getDataFromjwt");
 const removeTextFromStart = require("../utility/removeTextFromStart");
-
+require("dotenv").config();
 //Get models
 const Document = require("../models/document");
 const { deepStrictEqual } = require("assert");
-
+const S3 = require('aws-sdk/clients/s3');
+const s3 = new S3();
 //Save file With Random name
 //Get configs
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./uploads/docs/");
-  },
-  filename: (req, file, cb) => {
-    console.log(file);
+// const storage = multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     cb(null, "./uploads/docs/");
+//   },
+//   filename: (req, file, cb) => {
+//     console.log(file);
 
-    cb(null, Date.now() + ".pdf");
+//     cb(null, Date.now() + ".pdf");
+//   },
+// });
+
+
+let s3Key = new S3Client({
+  region: 'ap-southeast-1',
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   },
+  sslEnabled: false,
+  s3ForcePathStyle: true,
+  signatureVersion: 'v4',
 });
 
-const saveFile = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "./uploads/docs/");
-  },
-  filename: async (req, files, cb) => {
-    console.log(files);
 
-    cb(null, files.originalname);
-  },
+// s3.listBuckets((err, data) => {
+//   if (err) {
+//     console.log(err);
+//   } else {
+//     console.log(data);
+//   }
+// });
+
+
+const upload = multer({
+  storage: multerS3({
+    s3: s3Key,
+    bucket: "mc19th",
+    acl: "public-read",
+    key: function (req, file, cb) {
+      cb(null, Date.now() + "-" + file.originalname);
+    },
+  }),
 });
 
-const upload = multer({ storage: storage });
-const save = multer({ storage: saveFile });
+const save = multer({
+  storage: multerS3({
+    s3: s3,
+    bucket: 'mc19th',
+    acl: 'public-read',
+    key: function (req, file, cb) {
+      cb(null, file.name);
+    }
+  })
+});
+
 
 //Get Data to Client
 router.get("/", async (req, res, next) => {
@@ -51,7 +85,9 @@ router.get("/", async (req, res, next) => {
 
     const CreatorDoc = await Document.find({ authorId: user.id }).exec();
 
-    const yourWork = await Document.find({ reviewerStatus: user.reviewer }).exec(); 
+    const yourWork = await Document.find({
+      reviewerStatus: user.reviewer,
+    }).exec();
 
     //Merge all the documents into one obj
     const documents = {
@@ -59,7 +95,7 @@ router.get("/", async (req, res, next) => {
       approvedDoc: approvedDoc,
       rejectedDoc: rejectedDoc,
       CreatorDoc,
-      yourWork
+      yourWork,
     };
     console.log(documents.yourWork);
     res.render("document/documents", {
@@ -79,12 +115,13 @@ router.get("/", async (req, res, next) => {
 router.get("/view/:id", async (req, res, next) => {
   let user = getUserDataJWT(req, res);
   try {
+    
     const document = await Document.findById(req.params.id).exec();
     console.log(document);
     res.render("document/document", {
       title: "Document",
       user: user,
-      documents: document,
+      documents: document
     });
   } catch (err) {
     res.redirect("/404?type=error&description=" + err);
@@ -110,22 +147,17 @@ router.get("/edit/:id", async (req, res) => {
 
 //Delete document
 router.get("/delete/:id", async (req, res) => {
-    let user = getUserDataJWT(req, res);
-    try {
-      //delete Document from database 
-      const document = await Document.findById(req.params.id).exec();
-      fs.unlink(document.path, function (err) {
-        console.error(err);
-        res.redirect("/404?type=error&description=" + err);
-      });
-
-      const doc = await Document.deleteOne({ _id : req.params.id}).exec();
-      console.log(doc);
-      res.redirect('/documents')
-    } catch (err) {
-      res.redirect("/404?type=error&description=" + err);
-    }
-
+  let user = getUserDataJWT(req, res);
+  try {
+    //delete Document from database
+    const document = await Document.findById(req.params.id).exec();
+    const doc = await Document.deleteOne({ _id: req.params.id }).exec();
+    
+  } catch (err) {
+    console.error(err);
+    res.redirect("/404?type=error&description=" + err);
+  }
+  res.redirect("/documents");
 });
 
 //Todo: Cannot Approve Document
@@ -142,7 +174,7 @@ router.get("/approve/:id", async (req, res, next) => {
     await document.save().then((data) => {
       res.redirect("/documents");
       console.log(data);
-     });
+    });
   } catch (err) {
     res.redirect("/404?type=error&description=" + err);
   }
@@ -151,16 +183,16 @@ router.get("/approve/:id", async (req, res, next) => {
 //POST reject document per reviewer if user.reviewer = 1 then set reviewer.reviewer1 = true
 router.get("/reject/:id", async (req, res, next) => {
   try {
-  let user = getUserDataJWT(req, res);
-  const document = await Document.findById(req.params.id).exec();
-  //set document.reviewer to default value
-  document.reviewer = [0,0,0,0,0]
-  document.status = "rejected";
-  document.notPassby = user.prefix + " " + user.name;
-  await document.save();
-  res.redirect("/documents");
+    let user = getUserDataJWT(req, res);
+    const document = await Document.findById(req.params.id).exec();
+    //set document.reviewer to default value
+    document.reviewer = [0, 0, 0, 0, 0];
+    document.status = "rejected";
+    document.notPassby = user.prefix + " " + user.name;
+    await document.save();
+    res.redirect("/documents");
   } catch (err) {
-    res.redirect('/404?type=error&description='+ err)
+    res.redirect("/404?type=error&description=" + err);
   }
 });
 
@@ -174,7 +206,7 @@ router.get("/upload", async (req, res, next) => {
 router.post("/upload", upload.single("file"), (req, res, next) => {
   try {
     const user = getUserDataJWT(req, res);
-    const path = removeTextFromStart(8, req);
+    //const path = removeTextFromStart(8, req);
     let document = new Document({
       name: req.body.name,
       description: req.body.description,
@@ -182,12 +214,12 @@ router.post("/upload", upload.single("file"), (req, res, next) => {
       authorId: user.id,
       status: "pending",
       department: req.body.department,
-      file: path,
+      file: req.file.url
     });
-    console.log(document);
+    console.log("Upload Doc: " +document);
     document.save((err, document) => {
       if (err) {
-        return next(err);
+        // --->  Make Not Callback TT return next(err);
       }
       res.redirect("/documents");
     });

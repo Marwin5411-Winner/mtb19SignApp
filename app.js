@@ -4,7 +4,6 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const passport = require("passport"); /* POST login. */
-var multer = require('multer');
 //const session = require('express-session');
 require('./configs/db');
 require('dotenv').config();
@@ -16,7 +15,6 @@ require('./configs/passport');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var uploadRouter = require('./routes/upload');
 var authRouter = require('./routes/auth');
 var documentsRouter = require('./routes/documents');
 
@@ -42,7 +40,6 @@ app.use(express.static(path.join(__dirname, 'uploads')));
 
 app.use('/', indexRouter);
 app.use('/users', passport.authenticate('jwt', {session: false, failureRedirect: '/login'}), usersRouter);
-app.use('/upload', passport.authenticate('jwt', {session: false, failureRedirect: '/login'}), uploadRouter);
 app.use('/auth',  authRouter);
 app.use('/documents', passport.authenticate('jwt', {session: false, failureRedirect: '/login'}), documentsRouter);
 
